@@ -138,7 +138,7 @@ jobs:
       - name: Create repository
         run: |
           docker pull ${{ steps.meta.outputs.tags }}
-          docker run --rm -v $(pwd)/repo:/workdir --entrypoint=/usr/bin/repo-add chimera.db.tar.gz *.pkg.tar.*
+          docker run --rm -v $(pwd)/repo:/workdir --entrypoint=/usr/bin/repo-add ${{ steps.meta.outputs.tags }} chimera.db.tar.gz *.pkg.tar.*
       - name: Get time
         id: time
         uses: nanzm/get-time-action@master
