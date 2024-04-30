@@ -51,70 +51,70 @@ jobs:
         run: echo "matrix=$(ls -d pkgs/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
         shell: bash
 
-  aur-pkgbuild:
-    needs:
-     - build-docker-image
-     - list-pkgbuilds
-    name: Build AUR package
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        package: ${{ fromJson(needs.list-pkgbuilds.outputs.aur-pkgs) }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: chenx-dust/chimeraos
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      - name: Build packages
-        run: |
-          docker pull ${{ steps.meta.outputs.tags }}
-          docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/aur-pkgs/build-aur-package.sh ${{ steps.meta.outputs.tags }} ${{ matrix.package }}
-      - name: Upload Package Archives
-        uses: actions/upload-artifact@v3
-        with:
-            name: AUR-packages
-            path: aur-pkgs/*.pkg.tar*
+  # aur-pkgbuild:
+  #   needs:
+  #    - build-docker-image
+  #    - list-pkgbuilds
+  #   name: Build AUR package
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: true
+  #     matrix:
+  #       package: ${{ fromJson(needs.list-pkgbuilds.outputs.aur-pkgs) }}
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         repository: chenx-dust/chimeraos
+  #     - name: Extract metadata (tags, labels) for Docker
+  #       id: meta
+  #       uses: docker/metadata-action@v4
+  #       with:
+  #         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+  #     - name: Build packages
+  #       run: |
+  #         docker pull ${{ steps.meta.outputs.tags }}
+  #         docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/aur-pkgs/build-aur-package.sh ${{ steps.meta.outputs.tags }} ${{ matrix.package }}
+  #     - name: Upload Package Archives
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #           name: AUR-packages
+  #           path: aur-pkgs/*.pkg.tar*
 
-  pkgbuild:
-    needs:
-     - build-docker-image
-     - list-pkgbuilds
-    name: Build package
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        package: ${{ fromJson(needs.list-pkgbuilds.outputs.pkgs) }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: chenx-dust/chimeraos
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      - name: Build packages
-        run: |
-          docker pull ${{ steps.meta.outputs.tags }}
-          docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/pkgs/build-package.sh ${{ steps.meta.outputs.tags }} ${{ matrix.package }}
-      - name: Upload Package Archives
-        uses: actions/upload-artifact@v3
-        with:
-            name: Packages
-            path: pkgs/*.pkg.tar*
+  # pkgbuild:
+  #   needs:
+  #    - build-docker-image
+  #    - list-pkgbuilds
+  #   name: Build package
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: true
+  #     matrix:
+  #       package: ${{ fromJson(needs.list-pkgbuilds.outputs.pkgs) }}
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         repository: chenx-dust/chimeraos
+  #     - name: Extract metadata (tags, labels) for Docker
+  #       id: meta
+  #       uses: docker/metadata-action@v4
+  #       with:
+  #         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+  #     - name: Build packages
+  #       run: |
+  #         docker pull ${{ steps.meta.outputs.tags }}
+  #         docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/pkgs/build-package.sh ${{ steps.meta.outputs.tags }} ${{ matrix.package }}
+  #     - name: Upload Package Archives
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #           name: Packages
+  #           path: pkgs/*.pkg.tar*
 
   publish:
     needs:
      - build-docker-image
      - download-pkgs
-     - aur-pkgbuild
-     - pkgbuild
+    #  - aur-pkgbuild
+    #  - pkgbuild
     name: Create repository
     runs-on: ubuntu-latest
     steps:
@@ -127,14 +127,14 @@ jobs:
         with:
             name: Downloaded-packages
             path: pkgs/
-      - uses: actions/download-artifact@v3
-        with:
-            name: AUR-packages
-            path: pkgs/
-      - uses: actions/download-artifact@v3
-        with:
-            name: Packages
-            path: pkgs/
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #       name: AUR-packages
+      #       path: pkgs/
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #       name: Packages
+      #       path: pkgs/
       - name: Create repository
         run: |
           docker pull ${{ steps.meta.outputs.tags }}
