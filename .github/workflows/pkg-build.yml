@@ -141,7 +141,7 @@ jobs:
           pwd
           mkdir repo
           mv pkgs/* repo/
-          docker run --rm -v $(pwd)/repo:/workdir --privileged=true --entrypoint=/usr/bin/repo-add ${{ steps.meta.outputs.tags }} chimera.db.tar.gz *.pkg.tar.*
+          docker run --rm -v $(pwd)/repo:/workdir --privileged=true  -u root --entrypoint=/usr/bin/repo-add ${{ steps.meta.outputs.tags }} chimera.db.tar.gz *.pkg.tar.*
       - name: Get time
         id: time
         uses: nanzm/get-time-action@master
