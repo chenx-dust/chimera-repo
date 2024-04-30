@@ -146,7 +146,7 @@ jobs:
         uses: nanzm/get-time-action@master
         with:
           timeZone: UTC+8
-          format: 'YYYY-MM-DD-HH-mm-ss'
+          format: 'YYYY-MM-DD'
       - name: Create release
         id: create_release
         uses: softprops/action-gh-release@v1
