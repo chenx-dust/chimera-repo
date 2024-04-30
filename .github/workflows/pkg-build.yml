@@ -1,0 +1,155 @@
+name: Build repo packages
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-docker-image:
+    name: Build and publish docker container
+    uses: ./.github/workflows/build-builder.yml
+
+  download-pkgs:
+    name: Download release packages
+    steps:
+      - uses: robinraju/release-downloader@v1.10
+        with:
+          repository: 3003n/linux-chimeraos
+          latest: true
+          fileName: '*.pkg.tar.*'
+      - uses: robinraju/release-downloader@v1.10
+        with:
+          repository: ChimeraOS/mesa-chimeraos
+          latest: true
+          fileName: '*.pkg.tar.*'
+      - name: Upload Package Archives
+        uses: actions/upload-artifact@v3
+        with:
+            name: Downloaded-packages
+            path: '*.pkg.tar*'
+
+  list-pkgbuilds:
+    name: List Packages
+    runs-on: ubuntu-latest
+    outputs:
+      aur-pkgs: ${{ steps.set-aur-pkgs.outputs.matrix }}
+      pkgs: ${{ steps.set-pkgs.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: chenx-dust/chimeraos
+      - id: set-aur-pkgs
+        run: source ./manifest ; echo "matrix=$(echo ${AUR_PACKAGES} | jq -R -s -c 'split(" ")')" >> $GITHUB_OUTPUT
+        shell: bash
+      - id: set-pkgs
+        run: echo "matrix=$(ls -d pkgs/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+        shell: bash
+
+  aur-pkgbuild:
+    needs:
+     - build-docker-image
+     - list-pkgbuilds
+    name: Build AUR package
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        package: ${{ fromJson(needs.list-pkgbuilds.outputs.aur-pkgs) }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: chenx-dust/chimeraos
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Build packages
+        run: |
+          docker pull ${{ steps.meta.outputs.tags }}
+          docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/aur-pkgs/build-aur-package.sh ${{ steps.meta.outputs.tags }} ${{ matrix.package }}
+      - name: Upload Package Archives
+        uses: actions/upload-artifact@v3
+        with:
+            name: AUR-packages
+            path: aur-pkgs/*.pkg.tar*
+
+  pkgbuild:
+    needs:
+     - build-docker-image
+     - list-pkgbuilds
+    name: Build package
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        package: ${{ fromJson(needs.list-pkgbuilds.outputs.pkgs) }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: chenx-dust/chimeraos
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Build packages
+        run: |
+          docker pull ${{ steps.meta.outputs.tags }}
+          docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/pkgs/build-package.sh ${{ steps.meta.outputs.tags }} ${{ matrix.package }}
+      - name: Upload Package Archives
+        uses: actions/upload-artifact@v3
+        with:
+            name: Packages
+            path: pkgs/*.pkg.tar*
+
+  publish:
+    needs:
+     - build-docker-image
+     - download-pkgs
+     - aur-pkgbuild
+     - pkgbuild
+    name: Create repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - uses: actions/download-artifact@v3
+        with:
+            name: Downloaded-packages
+            path: repo/
+      - uses: actions/download-artifact@v3
+        with:
+            name: AUR-packages
+            path: repo/
+      - uses: actions/download-artifact@v3
+        with:
+            name: Packages
+            path: repo/
+      - name: Create repository
+        run: |
+          docker pull ${{ steps.meta.outputs.tags }}
+          docker run --rm -v $(pwd)/repo:/workdir --entrypoint=/usr/bin/repo-add chimera.db.tar.gz *.pkg.tar.*
+      - name: Get time
+        id: time
+        uses: nanzm/get-time-action@master
+        with:
+          timeZone: UTC+8
+          format: 'YYYY-MM-DD-HH-mm-ss'
+      - name: Create release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: latest
+          name: Chimera Repo at ${{ steps.time.outputs.time }}
+          draft: false
+          prerelease: true
+          fail_on_unmatched_files: true
+          files: repo/*
