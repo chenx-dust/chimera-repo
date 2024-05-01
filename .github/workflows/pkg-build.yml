@@ -22,11 +22,13 @@ jobs:
         with:
           repository: 3003n/linux-chimeraos
           latest: true
+          prerelease: true
           fileName: '*.pkg.tar.*'
       - uses: robinraju/release-downloader@v1.10
         with:
           repository: ChimeraOS/mesa-chimeraos
           latest: true
+          prerelease: true
           fileName: '*.pkg.tar.*'
       - name: Upload Package Archives
         uses: actions/upload-artifact@v3
