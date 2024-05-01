@@ -149,7 +149,7 @@ jobs:
           format: 'YYYY-MM-DD HH:mm:ss'
       - uses: dev-drprasad/delete-tag-and-release@v1.1
         with:
-          tag_name: latest #(required) - The name of the tag to delete. This is expected to be solely the tag name, not the name of a git reference.
+          tag_name: latest
           delete_release: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create release
