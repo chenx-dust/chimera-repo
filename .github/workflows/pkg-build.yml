@@ -147,20 +147,13 @@ jobs:
         with:
           timeZone: UTC
           format: 'YYYY-MM-DD HH:mm:ss'
-      - uses: dev-drprasad/delete-tag-and-release@v1.1
-        with:
-          tag_name: latest
-          delete_release: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: latest
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          artifacts: repo/*
+          makeLatest: true
           name: Chimera Repo at ${{ steps.time.outputs.time }} UTC
-          draft: false
-          prerelease: false
-          make_latest: true
-          append_body: false
-          files: repo/*
+          removeArtifacts: true
+          tag: latest
