@@ -158,7 +158,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: latest
-          name: Chimera Repo at ${{ steps.time.outputs.time }} UTC+8
+          name: Chimera Repo at ${{ steps.time.outputs.time }} UTC
           draft: false
           prerelease: false
           make_latest: true
