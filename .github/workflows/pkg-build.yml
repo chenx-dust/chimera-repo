@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: chimera/chimeraos
+          repository: ChimeraOS/chimeraos
       - id: set-pkgs
         run: echo "matrix=$(ls -d pkgs/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
         shell: bash
@@ -73,7 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: chimera/chimeraos
+          repository: ChimeraOS/chimeraos
       - name: Build packages
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
@@ -97,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: chimera/chimeraos
+          repository: ChimeraOS/chimeraos
       - name: Build packages
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
