@@ -72,8 +72,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       - name: Build packages
         run: |
-          docker pull ${{ steps.meta.outputs.tags.0 }}
-          docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/aur-pkgs/build-aur-package.sh ${{ steps.meta.outputs.tags.0 }} ${{ matrix.package }}
+          docker pull ${{ steps.meta.outputs.tags[0] }}
+          docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/aur-pkgs/build-aur-package.sh ${{ steps.meta.outputs.tags[0] }} ${{ matrix.package }}
       - name: Upload Package Archives
         uses: actions/upload-artifact@v3
         with:
@@ -101,8 +101,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       - name: Build packages
         run: |
-          docker pull ${{ steps.meta.outputs.tags.0 }}
-          docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/pkgs/build-package.sh ${{ steps.meta.outputs.tags.0 }} ${{ matrix.package }}
+          docker pull ${{ steps.meta.outputs.tags[0] }}
+          docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/pkgs/build-package.sh ${{ steps.meta.outputs.tags[0] }} ${{ matrix.package }}
       - name: Upload Package Archives
         uses: actions/upload-artifact@v3
         with:
@@ -137,9 +137,9 @@ jobs:
             path: repo/
       - name: Create repository
         run: |
-          docker pull ${{ steps.meta.outputs.tags.0 }}
+          docker pull ${{ steps.meta.outputs.tags[0] }}
           docker run --rm -v $(pwd)/repo:/workdir --privileged=true  -u root --entrypoint=/usr/bin/bash \
-            ${{ steps.meta.outputs.tags.0 }} \
+            ${{ steps.meta.outputs.tags[0] }} \
             -c "repo-add chimera.db.tar.gz *.pkg.tar.*"
       - name: Get time
         id: time
