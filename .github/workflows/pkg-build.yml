@@ -67,7 +67,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        package: ${{ fromJson(needs.list-pkgbuilds.outputs.aur-pkgs) }}
+        package: ${{ fromJson(needs.list-aurbuilds.outputs.aur-pkgs) }}
     steps:
       - uses: actions/checkout@v3
         with:
