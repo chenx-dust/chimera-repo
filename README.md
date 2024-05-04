@@ -2,7 +2,7 @@
 
 ## Usage
 
-Add to the end of `/etc/pacman.conf`
+Add to `/etc/pacman.conf`
 
 ```ini
 [chimera]

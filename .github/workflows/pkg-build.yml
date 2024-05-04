@@ -38,7 +38,6 @@ jobs:
     name: List Packages
     runs-on: ubuntu-latest
     outputs:
-      aur-pkgs: ${{ steps.set-aur-pkgs.outputs.matrix }}
       pkgs: ${{ steps.set-pkgs.outputs.matrix }}
     steps:
       - uses: actions/checkout@v3
@@ -53,7 +52,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       aur-pkgs: ${{ steps.set-aur-pkgs.outputs.matrix }}
-      pkgs: ${{ steps.set-pkgs.outputs.matrix }}
     steps:
       - uses: actions/checkout@v3
       - id: set-aur-pkgs
