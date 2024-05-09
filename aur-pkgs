@@ -1,55 +1,55 @@
 export AUR_PACKAGES="\
-	# ayaneo-platform-dkms-git \
-	# ayn-platform-dkms-git \
-	# bcm20702a1-firmware \
-	# bmi160-aya-neo-dkms-git \
-	# bmi260-dkms \
-	# boxtron \
-	# chimera \
-	# chimeraos-device-quirks-git \
-	# downgrade \
-	# evdev-keepalive \
-	# frzr \
-	# frzr-sk \
-	# gamescope-plus \
-	# gamescope-sk \
-	# gamescope-session-sk-git \
-	# gamescope-session-steam-git \
-	# gamescope-session-steam-plus-git \
-	# hhd \
-	# hhd-ui \
-	# hhfc-git \
-	# inputplumber-bin \
-	# legendary \
-	# lib32-extest \
-	# lib32-gamescope-plus \
-	# lib32-gperftools \
-	# libretro-dosbox-pure-git \
-	# libretro-opera-git \
-	# libretro-prosystem-git \
-	# libretro-stella2014-git \
-	# libretro-virtualjaguar-git \
-	# kanit-font \
-	# nintendo-udev \
-	# opengamepadui-bin \
-	# opengamepadui-session-git \
-	# paru-bin \
-	# pikaur \
-	# protonup-qt-bin \
-	# powerstation-bin \
-	# python-gbopyrator \
-	# python-vdf \
-	# r8152-dkms \
-	# rtl8812au-dkms-git \
-	# rtl8814au-dkms-git \
-	# rtl88x2bu-dkms-git \
-	# rtl8821au-dkms-git \
-	# ryzenadj-git \
+	ayaneo-platform-dkms-git \
+	ayn-platform-dkms-git \
+	bcm20702a1-firmware \
+	bmi160-aya-neo-dkms-git \
+	bmi260-dkms \
+	boxtron \
+	chimera \
+	chimeraos-device-quirks-git \
+	downgrade \
+	evdev-keepalive \
+	frzr \
+	frzr-sk \
+	gamescope-plus \
+	gamescope-sk \
+	gamescope-session-sk-git \
+	gamescope-session-steam-git \
+	gamescope-session-steam-plus-git \
+	hhd \
+	hhd-ui \
+	hhfc-git \
+	inputplumber-bin \
+	legendary \
+	lib32-extest \
+	lib32-gamescope-plus \
+	lib32-gperftools \
+	libretro-dosbox-pure-git \
+	libretro-opera-git \
+	libretro-prosystem-git \
+	libretro-stella2014-git \
+	libretro-virtualjaguar-git \
+	kanit-font \
+	nintendo-udev \
+	opengamepadui-bin \
+	opengamepadui-session-git \
+	paru-bin \
+	pikaur \
+	protonup-qt-bin \
+	powerstation-bin \
+	python-gbopyrator \
+	python-vdf \
+	r8152-dkms \
+	rtl8812au-dkms-git \
+	rtl8814au-dkms-git \
+	rtl88x2bu-dkms-git \
+	rtl8821au-dkms-git \
+	ryzenadj-git \
 	steam_notif_daemon \
-	# steam-removable-media-git \
-	# wyvern \
-	# waydroid \
-	# waydroid-script-git \
-	# wlr-randr \
-	# zenergy-dkms-git \
+	steam-removable-media-git \
+	wyvern \
+	waydroid \
+	waydroid-script-git \
+	wlr-randr \
+	zenergy-dkms-git \
 "
