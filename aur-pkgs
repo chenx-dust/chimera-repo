@@ -46,6 +46,7 @@ export AUR_PACKAGES="\
 	rtl8821au-dkms-git \
 	ryzenadj-git \
 	steam_notif_daemon \
+	steam-gamepadui-session-git \
 	steam-removable-media-git \
 	wyvern \
 	waydroid \

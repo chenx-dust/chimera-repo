@@ -110,7 +110,6 @@ jobs:
     needs:
      - build-docker-image
      - download-pkgs
-     - aur-pkgbuild
      - pkgbuild
     name: Create repository
     runs-on: ubuntu-latest
@@ -118,10 +117,6 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
             name: Downloaded-packages
-            path: repo/
-      - uses: actions/download-artifact@v3
-        with:
-            name: AUR-packages
             path: repo/
       - uses: actions/download-artifact@v3
         with:
@@ -148,4 +143,37 @@ jobs:
           makeLatest: true
           name: Chimera Repo at ${{ steps.time.outputs.time }} UTC
           removeArtifacts: true
-          tag: latest
+          tag: chimera
+
+  publish-extra:
+    needs:
+     - build-docker-image
+     - aur-pkgbuild
+    name: Create repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+            name: AUR-packages
+            path: repo-extra/
+      - name: Create repository
+        run: |
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+          docker run --rm -v $(pwd)/repo-extra:/workdir --privileged=true  -u root --entrypoint=/usr/bin/bash \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main \
+            -c "repo-add chimera-extra.db.tar.gz *.pkg.tar.*"
+      - name: Get time
+        id: time
+        uses: nanzm/get-time-action@master
+        with:
+          timeZone: UTC
+          format: 'YYYY-MM-DD HH:mm:ss'
+      - name: Create release extra
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          artifacts: repo-extra/*
+          name: Chimera Extra Repo at ${{ steps.time.outputs.time }} UTC
+          removeArtifacts: true
+          tag: chimera-extra
