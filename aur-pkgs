@@ -18,6 +18,7 @@ export AUR_PACKAGES="\
 	hhd \
 	hhd-ui \
 	hhfc-git \
+	ibus-pinyin \
 	inputplumber-bin \
 	legendary \
 	lib32-extest \
