@@ -1,6 +1,4 @@
 export AUR_PACKAGES="\
 	hhd \
 	hhd-ui \
-	steam-gamepadui-session-git \
-	steam-removable-media-git \
 "

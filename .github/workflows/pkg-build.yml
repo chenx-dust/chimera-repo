@@ -14,39 +14,6 @@ jobs:
     name: Build and publish docker container
     uses: ./.github/workflows/build-builder.yml
 
-  download-pkgs:
-    name: Download release packages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: robinraju/release-downloader@v1.10
-        with:
-          repository: 3003n/linux-chimeraos
-          latest: true
-          fileName: '*.pkg.tar.*'
-      - uses: robinraju/release-downloader@v1.10
-        with:
-          repository: ChimeraOS/mesa-chimeraos
-          latest: true
-          fileName: '*.pkg.tar.*'
-      - name: Upload Package Archives
-        uses: actions/upload-artifact@v4
-        with:
-            name: Downloaded-packages
-            path: '*.pkg.tar*'
-
-  list-pkgbuilds:
-    name: List Packages
-    runs-on: ubuntu-latest
-    outputs:
-      pkgs: ${{ steps.set-pkgs.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: ChimeraOS/chimeraos
-      - id: set-pkgs
-        run: echo "matrix=$(ls -d pkgs/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-        shell: bash
-
   list-aurbuilds:
     name: List AUR Packages
     runs-on: ubuntu-latest
@@ -81,69 +48,6 @@ jobs:
         with:
             name: AUR-packages
             path: aur-pkgs/*.pkg.tar*
-
-  pkgbuild:
-    needs:
-     - build-docker-image
-     - list-pkgbuilds
-    name: Build package
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        package: ${{ fromJson(needs.list-pkgbuilds.outputs.pkgs) }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: ChimeraOS/chimeraos
-      - name: Build packages
-        run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
-          docker run --rm -v $(pwd):/workdir --entrypoint=/workdir/pkgs/build-package.sh ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main ${{ matrix.package }}
-      - name: Upload Package Archives
-        uses: actions/upload-artifact@v4
-        with:
-            name: Packages
-            path: pkgs/*.pkg.tar*
-
-  publish:
-    needs:
-     - build-docker-image
-     - download-pkgs
-     - pkgbuild
-    name: Create repository
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-            name: Downloaded-packages
-            path: repo/
-      - uses: actions/download-artifact@v4
-        with:
-            name: Packages
-            path: repo/
-      - name: Create repository
-        run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
-          docker run --rm -v $(pwd)/repo:/workdir --privileged=true  -u root --entrypoint=/usr/bin/bash \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main \
-            -c "repo-add chimera.db.tar.gz *.pkg.tar.*"
-      - name: Get time
-        id: time
-        uses: nanzm/get-time-action@master
-        with:
-          timeZone: UTC
-          format: 'YYYY-MM-DD HH:mm:ss'
-      - name: Create release
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifactErrorsFailBuild: true
-          artifacts: repo/*
-          makeLatest: true
-          name: Chimera Repo at ${{ steps.time.outputs.time }} UTC
-          removeArtifacts: true
-          tag: chimera
 
   publish-extra:
     needs:
